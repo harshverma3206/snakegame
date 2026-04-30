@@ -4,20 +4,25 @@ const HeroPage = () => {
 
     const gameBoardRef = useRef()
 
-    const [finalBox, setFinalBox] = useState(0)
+    const [row, setRow] = useState(0)
+    const [column, setColumn] = useState(0)
+    const blocks = []
 
     useEffect(() => {
         const element = gameBoardRef.current;
         if (!element) return;
 
         const calculateGrid = () => {
-            const blockHeight = 20;
-            const blockWidth = 20;
+            const blockHeight = 80;
+            const blockWidth = 80;
 
             const columns = Math.floor(element.clientWidth / blockWidth);
             const rows = Math.floor(element.clientHeight / blockHeight);
 
-            setFinalBox(columns * rows);
+            // setFinalBox(columns * rows);
+            setRow(rows);
+            setColumn(columns);
+    
         };
 
         calculateGrid();
@@ -25,6 +30,7 @@ const HeroPage = () => {
     }, []);
 
 
+    
     return (
         <div>
             <div className='py-10! px-40! flex gap-10! h-screen'>
@@ -33,10 +39,14 @@ const HeroPage = () => {
                     <div className='border border-gray-300 py-2! px-4! rounded-2xl'><h1>Score:<span> 0 </span></h1></div>
                     <div className='border border-gray-300 py-2! px-4! rounded-2xl'><h1>Time:<span> 00-00 </span></h1></div>
                 </div>
-                <div ref={gameBoardRef} className='bg-orange-600 flex-1 grid grid-cols-[repeat(auto-fill,minmax(20px,1fr))] grid-rows-[repeat(auto-fill,minmax(20px,1fr))]'>
-                    {[...Array(finalBox)].map((_, index) => {
-                        return <div key={index} className='box'></div>
-                    })}
+                <div ref={gameBoardRef} className='flex-1 grid grid-cols-[repeat(auto-fill,minmax(80px,1fr))] grid-rows-[repeat(auto-fill,minmax(80px,1fr))]'>
+                    {Array.from({ length: row }).map((_, rowIndex) => (
+                        Array.from({ length: column }).map((_, colIndex) => (
+                            <div key={`${rowIndex}-${colIndex}`} className='box text-[1rem]'>
+                                {rowIndex}-{colIndex}
+                            </div>
+                        ))
+                    ))}
                 </div>
             </div>
             <div className='h-screen bg-pink-500'>Hye</div>
