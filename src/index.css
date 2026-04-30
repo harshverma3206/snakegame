@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  font-family: Gilroy, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+img {
+  display: block;
+  object-fit: cover;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+}
+
+h1,
+span {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  text-transform: uppercase;
+}
+
+.box {
+  border: 1px solid rgba(245, 222, 179, 0.599);
+  /* background-color: wh?eat; */
+}
