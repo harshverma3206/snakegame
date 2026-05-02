@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { use, useEffect, useRef, useState } from 'react'
 
 const HeroPage = () => {
 
@@ -8,6 +8,7 @@ const HeroPage = () => {
     const [column, setColumn] = useState([])
     const [blockElements, setBlockElements] = useState([])
 
+    // Calculate the number of rows and columns based on the game board size
     useEffect(() => {
         const element = gameBoardRef.current;
         if (!element) return;
@@ -22,19 +23,37 @@ const HeroPage = () => {
             // setFinalBox(columns * rows);
             setRow(rows);
             setColumn(columns);
-
         };
 
         calculateGrid();
 
-    }, []);
+    }, [])
 
+    // Array for all block elements
     useEffect(() => {
         const allBoxElements = document.querySelectorAll('.box');
         setBlockElements(Array.from(allBoxElements));
-        window.allBlockElements = Array.from(allBoxElements);
+        window.allBlockElements = allBoxElements;
     }, [row, column]);
 
+    //create a snake array
+    const snake = [
+        { x: 10, y: 1 },
+        { x: 0, y: 0 },
+        { x: 0, y: 0 }
+    ]
+
+    useEffect(() => {
+        const renderSnake = () => {
+            snake.forEach((segment, index) => {
+                allBlockElements[segment.x + segment.y].classList.add('snake');
+            });
+        };
+
+        if (blockElements.length > 0) {
+            renderSnake();
+        }
+    }, [blockElements, column]);
 
     return (
         <div>
@@ -48,7 +67,6 @@ const HeroPage = () => {
                     {Array.from({ length: row }).map((_, rowIndex) => (
                         Array.from({ length: column }).map((_, colIndex) => (
                             <div key={`${rowIndex}-${colIndex}`} className='box text-[1rem]'>
-                                
                             </div>
                         ))
                     ))}

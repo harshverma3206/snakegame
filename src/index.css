@@ -38,3 +38,7 @@ span {
   border: 1px solid rgba(245, 222, 179);
   /* background-color: wh?eat; */
 }
+
+.snake {
+  background-color: #d21616;
+}
