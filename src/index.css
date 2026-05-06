@@ -5,7 +5,7 @@
   padding: 0;
   box-sizing: border-box;
   scroll-behavior: smooth;
-  font-family: Gilroy, sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 html,
@@ -14,6 +14,11 @@ body {
   padding: 0;
   box-sizing: border-box;
   scroll-behavior: smooth;
+}
+
+body {
+  background-color: #222;
+  color: aliceblue;
 }
 
 img {
@@ -28,17 +33,29 @@ button {
 
 h1,
 span {
-  font-family: "Roboto", sans-serif;
-  font-weight: 700;
-  font-size: 2rem;
-  text-transform: uppercase;
+  font-weight: 500;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+}
+
+h1 {
+  text-transform: lowercase;
+  letter-spacing: -0.05rem;
+}
+
+h2 {
+  font-family: "Fleur De Leah", cursive;
+  font-weight: 200;
+}
+
+h1 span {
+  font-weight: 500;
 }
 
 .box {
-  border: 1px solid rgba(245, 222, 179);
-  /* background-color: wh?eat; */
+  border: 1px solid rgba(240, 248, 255, 0.28);
+  font-size: .5rem;
 }
 
 .snake {
-  background-color: #d21616;
+  background-color: rgba(255, 217, 0, 0.839);
 }
