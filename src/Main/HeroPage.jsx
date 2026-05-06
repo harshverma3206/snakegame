@@ -6,7 +6,7 @@ const HeroPage = () => {
 
     const [row, setRow] = useState([])
     const [column, setColumn] = useState([])
-    // const [blockElements, setBlockElements] = useState([])
+    const [blockElements, setBlockElements] = useState([])
 
     // Calculate the number of rows and columns based on the game board size
     useEffect(() => {
@@ -20,10 +20,6 @@ const HeroPage = () => {
             const rows = Math.floor(element.clientHeight / blockHeight);
             const columns = Math.floor(element.clientWidth / blockHeight);
 
-
-            console.log(rows);
-            console.log(columns);
-
             // setFinalBox(columns * rows);
             setRow(rows);
             setColumn(columns);
@@ -33,12 +29,23 @@ const HeroPage = () => {
 
     }, [])
 
-    // Array for all block elements
-    // useEffect(() => {
-    //     const allBoxElements = document.querySelectorAll('.box');
-    //     setBlockElements(Array.from(allBoxElements));
-    //     window.allBlockElements = allBoxElements;
-    // }, [row, column]);
+    // Array of board blocks
+    useEffect(() => {
+
+        const allBoxElements = document.querySelectorAll('.box');
+
+        allBoxElements.forEach((e) => {
+            const row = e.dataset.row;
+            const column = e.dataset.column;
+            const block = {
+                [`${row}-${column}`]: e
+            }
+            console.log(block);
+
+        })
+
+
+    }, [row, column]);
 
     //create a snake array
     // const snake = [
@@ -74,7 +81,12 @@ const HeroPage = () => {
                     {Array.from({ length: row }).map((_, i) => (
                         <div key={i} className='grid grid-cols-[repeat(auto-fill,minmax(20px,1fr))]'>
                             {Array.from({ length: column }).map((_, j) => (
-                                <div key={j} style={{ height: "20px", width: "20px" }} className="box">
+                                <div
+                                    data-row={i}
+                                    data-column={j}
+                                    key={j}
+                                    style={{ height: "20px", width: "20px" }}
+                                    className="box">
                                     {`${i}-${j}`}
                                 </div>
                             ))}
