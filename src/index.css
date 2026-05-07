@@ -16,11 +16,6 @@ body {
   scroll-behavior: smooth;
 }
 
-body {
-  background-color: #222;
-  color: aliceblue;
-}
-
 img {
   display: block;
   object-fit: cover;
@@ -52,7 +47,7 @@ h1 span {
 }
 
 .box {
-  border: 1px solid rgba(240, 248, 255, 0.28);
+  border: 0.5px solid #d1d5dc ;
   font-size: .5rem;
 }
 
