@@ -44,28 +44,48 @@ const HeroPage = () => {
 
     //Snake body coordinates
     const snake = [
-        { row: 5, column: 4 },
-        { row: 6, column: 4 },
-        { row: 7, column: 4 },
-        { row: 8, column: 4 },
+        { x: 0, y: 3 },
+        { x: 0, y: 2 },
+        { x: 0, y: 1 },
+        { x: 0, y: 0 }
     ]
 
     // Function to render the snake on the game board
     const renderSnake = () => {
         snake.forEach((segment) => {
-            blockElements[`${segment.row}-${segment.column}`].classList.add('snake');
+            blockElements[`${segment.x}-${segment.y}`].classList.add('snakeColor')
         })
     }
 
     // Render the snake on the game board whenever the block elements are updated
-    useEffect(() => {
-        // if (blockElements.length === 0) return
-        if (isFirstRender.current) {
-            isFirstRender.current = false;
-            return;
+    setInterval(() => {
+
+        let snakeHead = null;
+        let direction = 'right';
+
+        if (direction === 'right') {
+            snakeHead = { x: snake[0].x + 1, y: snake[0].y }
+            snakeHead = { x: snake[0].x, y: snake[0].y + 1 }
         }
+
+        snake.forEach((segment) => {
+            blockElements[`${segment.x}-${segment.y}`].classList.remove('snakeColor')
+        })
+
+        snake.unshift(snakeHead);
+        snake.pop();
+
         renderSnake()
-    }, [blockElements])
+    }, 300)
+
+    // useEffect(() => {
+    //     // if (blockElements.length === 0) return
+    //     if (isFirstRender.current) {
+    //         isFirstRender.current = false;
+    //         return;
+    //     }
+
+    // }, [blockElements])
 
     return (
         <div>
