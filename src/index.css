@@ -60,15 +60,18 @@ h1 span {
   font-weight: 500;
 }
 
-.box {
-  /* border: 0.5px solid #d1d5dc ; */
-  /* font-size: .5rem; */
-}
-
 .snakeColor {
-  background-color: rgba(255, 217, 0, 0.839);
+  background-color: rgba(255, 255, 0, 0.866);
+  /* border: 1px solid #642e05; */
+  border-radius: 35%;
+
+  /* transition: all 0.2s ease-in-out; */
 }
 
 .foodColor {
+  transition: all 0.2s ease-in-out;
   background-color: wheat;
+  scale: .7;
+  /* box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.2); */
+  border-radius: 50%;
 }

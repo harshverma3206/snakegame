@@ -10,6 +10,9 @@ const HeroPage = () => {
     const modalRef = useRef()
     const gameOverModalRef = useRef()
     const gameStartRef = useRef()
+    const scoreRef = useRef()
+    const highScoreRef = useRef()
+    const timeRef = useRef()
 
     //useState Conditions
     const [row, setRow] = useState([])
@@ -17,8 +20,13 @@ const HeroPage = () => {
     const [blockElements, setBlockElements] = useState([])
 
     //Global Variables
-    let direction = 'right';
+    let direction = 'down';
     let intervalId = null;
+    let timeIntervalId = null;
+    let score = 0;
+    let time = `0-0`;
+    let highScore = localStorage.getItem('highScore') || 0;
+
 
     //Generate food
     let food = {
@@ -33,11 +41,11 @@ const HeroPage = () => {
         if (!element) return;
 
         const calculateGrid = () => {
-            const blockHeight = 10
-            const blockWidth = 10
+            const blockHeight = 20
+            const blockWidth = 20
 
             const rows = Math.floor(element.clientHeight / blockHeight);
-            const columns = Math.floor(element.clientWidth / blockHeight);
+            const columns = Math.floor(element.clientWidth / blockWidth);
 
             setRow(rows);
             setColumn(columns);
@@ -61,14 +69,14 @@ const HeroPage = () => {
 
     //Snake body coordinates
     let snake = [
-        { x: 0, y: 13 },
-        { x: 0, y: 12 },
-        { x: 0, y: 11 },
+        { x: 0, y: 13 }
     ]
 
     // Render Snake to gameboard
     const render = () => {
         console.log("Rendering...");
+
+        highScoreRef.current.textContent = highScore;
 
         //Food rendering
         blockElements[`${food.x}-${food.y}`].classList.add('foodColor')
@@ -91,6 +99,7 @@ const HeroPage = () => {
         if (snakeHead.x < 0 || snakeHead.x >= row || snakeHead.y < 0 || snakeHead.y >= column) {
             // alert('Game Over');
             clearInterval(intervalId)
+            clearInterval(timeIntervalId)
             modalRef.current.style.display = 'flex';
             gameOverModalRef.current.style.display = 'flex';
             gameStartRef.current.style.display = 'none';
@@ -106,6 +115,14 @@ const HeroPage = () => {
 
             //Add new head to the snake body
             snake.unshift(snakeHead);
+
+            score += 1;
+            if (score > highScore) {
+                highScoreRef.current.textContent = highScore;
+                localStorage.setItem('highScore', highScore.toString());
+                highScore = score;
+            }
+            scoreRef.current.textContent = score;
         }
 
         //Remove snake color from the tail segment
@@ -128,20 +145,38 @@ const HeroPage = () => {
         intervalId = setInterval(() => {
             render()
         }, 200)
+
+        timeIntervalId = setInterval(() => {
+            let [min, sec] = time.split('-').map(Number)
+            console.log(min, sec);
+
+            sec += 1;
+            if (sec === 60) {
+                min += 1;
+                sec = 0;
+            } else {
+                sec += 1
+            }
+            time = `${min}-${sec}`
+
+            timeRef.current.textContent = time;
+        }, 1000)
     }
 
     //Restart Game
     const restartHandler = () => {
         modalRef.current.style.display = 'none';
 
+        score = 0;
+        scoreRef.current.textContent = score;
+
         //Reset snake position
         snake = [
-            { x: 0, y: 17 },
-            { x: 0, y: 18 },
-            { x: 0, y: 19 }
+            { x: 3, y: 8 }
         ]
+
         //Reser Direction
-        direction = 'right';
+        direction = 'down';
 
         //Reset snake color
         snake.forEach((segment) => {
@@ -164,36 +199,26 @@ const HeroPage = () => {
         intervalId = setInterval(() => {
             render()
         }, 200)
+
+        //Start the timer again
+        timeIntervalId = setInterval((e) => {
+
+            time = `00-00`;
+
+            let [min, sec] = time.split('-').map(Number)
+
+            sec += 1;
+            if (sec === 60) {
+                min += 1;
+                sec = 0;
+            } else {
+                sec += 1
+            }
+            time = `${min}-${sec}`
+
+            timeRef.current.textContent = time;
+        }, 1000)
     }
-
-    // const restartHandler = () => {
-    //     console.log(blockElements);
-    //     blockElements[`${food.x}-${food.y}`].classList.remove('foodColor')
-
-    //     snake.forEach((segment) => {
-    //         console.log(segment);
-    //         blockElements[`${segment.x}-${segment.y}`].classList.remove('snakeColor')
-    //     })
-
-    //     //Reset snake position
-    //     snake = [
-    //         { x: 0, y: 13 },
-    //         { x: 0, y: 12 },
-    //         { x: 0, y: 11 }
-    //     ]
-    //     //Reset food position
-    //     food = {
-    //         x: Math.floor(Math.random() * row),
-    //         y: Math.floor(Math.random() * column)
-    //     };
-
-    //     //Hide game over modal
-    //     modalRef.current.style.display = 'none';
-
-    //     intervalId = setInterval(() => {
-    //         render()
-    //     }, 200)
-    // }
 
     //control the snake movement using arrow keys
     addEventListener('keydown', (e) => {
@@ -215,20 +240,20 @@ const HeroPage = () => {
                 <div className='flex flex-col items-center'>
                     <h2 className='text-4xl! text-center mb-8! lg:mb-15! font-bold!'>Snaky</h2>
                     <div className='flex flex-col lg:flex-row gap-3 px-8! items-center'>
-                        <div className='border border-gray-300 py-2! px-5! rounded-2xl min-w-80 '><h1>High Score : <span> 0 </span></h1></div>
-                        <div className='border border-gray-300 py-2! px-5! rounded-2xl min-w-80 '><h1>Score : <span> 0 </span></h1></div>
-                        <div className='border border-gray-300 py-2! px-5! rounded-2xl min-w-80 '><h1>Time : <span> 00-00 </span></h1></div>
+                        <div className='border border-gray-300 py-2! px-5! rounded-2xl min-w-80 '><h1>High Score : <span ref={highScoreRef}> 0 </span></h1></div>
+                        <div className='border border-gray-300 py-2! px-5! rounded-2xl min-w-80 '><h1>Score : <span ref={scoreRef}> 0 </span></h1></div>
+                        <div className='border border-gray-300 py-2! px-5! rounded-2xl min-w-80 '><h1>Time : <span ref={timeRef}> 0-0 </span></h1></div>
                     </div>
                 </div>
-                <div ref={gameBoardRef} className='flex-1 grid grid-rows-[repeat(auto-fill,minmax(10px,1fr))] mx-5! lg:mx-53! bg-amber-800'>
+                <div ref={gameBoardRef} className='flex-1 grid grid-rows-[repeat(auto-fill,minmax(20px,1fr))] mx-5! lg:mx-53! bg-amber-800'>
                     {Array.from({ length: row }).map((_, i) => (
-                        <div key={i} className='grid grid-cols-[repeat(auto-fill,minmax(10px,1fr))]'>
+                        <div key={i} className='grid grid-cols-[repeat(auto-fill,minmax(20px,1fr))]'>
                             {Array.from({ length: column }).map((_, j) => (
                                 <div
                                     data-row={i}
                                     data-column={j}
                                     key={j}
-                                    style={{ height: "10px", width: "10px" }}
+                                    style={{ height: "20px", width: "20px" }}
                                     className="box">
                                     {/* {`${i}-${j}`} */}
                                 </div>
