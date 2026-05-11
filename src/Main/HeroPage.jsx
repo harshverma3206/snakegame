@@ -4,7 +4,12 @@ const HeroPage = () => {
 
     //useRef Conditions
     const gameBoardRef = useRef()
-    const isFirstRender = useRef(true);
+    const isFirstRender = useRef(true)
+    const startButtonRef = useRef()
+    const restartButtonRef = useRef()
+    const modalRef = useRef()
+    const gameOverModalRef = useRef()
+    const gameStartRef = useRef()
 
     //useState Conditions
     const [row, setRow] = useState([])
@@ -12,7 +17,7 @@ const HeroPage = () => {
     const [blockElements, setBlockElements] = useState([])
 
     //Global Variables
-    let direction = 'left';
+    let direction = 'right';
     let intervalId = null;
 
     //Generate food
@@ -51,12 +56,11 @@ const HeroPage = () => {
             block[`${row}-${column}`] = e;
         })
         setBlockElements(block);
-        console.log(block);
 
     }, [row, column])
 
     //Snake body coordinates
-    const snake = [
+    let snake = [
         { x: 0, y: 13 },
         { x: 0, y: 12 },
         { x: 0, y: 11 },
@@ -64,6 +68,7 @@ const HeroPage = () => {
 
     // Render Snake to gameboard
     const render = () => {
+        console.log("Rendering...");
 
         //Food rendering
         blockElements[`${food.x}-${food.y}`].classList.add('foodColor')
@@ -84,8 +89,11 @@ const HeroPage = () => {
 
         //Control game over conditions
         if (snakeHead.x < 0 || snakeHead.x >= row || snakeHead.y < 0 || snakeHead.y >= column) {
-            alert('Game Over');
+            // alert('Game Over');
             clearInterval(intervalId)
+            modalRef.current.style.display = 'flex';
+            gameOverModalRef.current.style.display = 'flex';
+            gameStartRef.current.style.display = 'none';
         }
 
         //food eating conditions
@@ -95,6 +103,9 @@ const HeroPage = () => {
                 x: Math.floor(Math.random() * row),
                 y: Math.floor(Math.random() * column)
             }
+
+            //Add new head to the snake body
+            snake.unshift(snakeHead);
         }
 
         //Remove snake color from the tail segment
@@ -109,13 +120,80 @@ const HeroPage = () => {
         snake.forEach((segment) => {
             blockElements[`${segment.x}-${segment.y}`].classList.add('snakeColor')
         })
-
     }
 
-    // Render the snake on the game board whenever the block elements are updated
-    intervalId = setInterval(() => {
-        render()
-    }, 200)
+    //Start Game
+    const startGameHandler = () => {
+        modalRef.current.style.display = 'none';
+        intervalId = setInterval(() => {
+            render()
+        }, 200)
+    }
+
+    //Restart Game
+    const restartHandler = () => {
+        modalRef.current.style.display = 'none';
+
+        //Reset snake position
+        snake = [
+            { x: 0, y: 17 },
+            { x: 0, y: 18 },
+            { x: 0, y: 19 }
+        ]
+        //Reser Direction
+        direction = 'right';
+
+        //Reset snake color
+        snake.forEach((segment) => {
+            blockElements[`${segment.x}-${segment.y}`].classList.add('snakeColor')
+        })
+
+        //Remove food color
+        blockElements[`${food.x}-${food.y}`].classList.remove('foodColor')
+
+        // Reset food position
+        food = {
+            x: Math.floor(Math.random() * row),
+            y: Math.floor(Math.random() * column)
+        }
+
+        //Add food color
+        blockElements[`${food.x}-${food.y}`].classList.add('foodColor')
+
+        //Start the game loop again
+        intervalId = setInterval(() => {
+            render()
+        }, 200)
+    }
+
+    // const restartHandler = () => {
+    //     console.log(blockElements);
+    //     blockElements[`${food.x}-${food.y}`].classList.remove('foodColor')
+
+    //     snake.forEach((segment) => {
+    //         console.log(segment);
+    //         blockElements[`${segment.x}-${segment.y}`].classList.remove('snakeColor')
+    //     })
+
+    //     //Reset snake position
+    //     snake = [
+    //         { x: 0, y: 13 },
+    //         { x: 0, y: 12 },
+    //         { x: 0, y: 11 }
+    //     ]
+    //     //Reset food position
+    //     food = {
+    //         x: Math.floor(Math.random() * row),
+    //         y: Math.floor(Math.random() * column)
+    //     };
+
+    //     //Hide game over modal
+    //     modalRef.current.style.display = 'none';
+
+    //     intervalId = setInterval(() => {
+    //         render()
+    //     }, 200)
+    // }
 
     //control the snake movement using arrow keys
     addEventListener('keydown', (e) => {
@@ -132,6 +210,7 @@ const HeroPage = () => {
 
     return (
         <div>
+            {/* //Game Board */}
             <div className='py-10! px-2! lg:px-40! flex flex-col gap-10! h-screen'>
                 <div className='flex flex-col items-center'>
                     <h2 className='text-4xl! text-center mb-8! lg:mb-15! font-bold!'>Snaky</h2>
@@ -159,7 +238,22 @@ const HeroPage = () => {
 
                 </div>
             </div>
-            {/* <div className='h-screen bg-pink-500'>Hye</div> */}
+
+            {/* ModalBoard  */}
+            <div ref={modalRef} className='h-screen w-full fixed top-0 bg-pink-500/5 backdrop-blur-xl flex items-center justify-center'>
+                <div ref={gameStartRef} className='bg-white/90 rounded-2xl p-10! flex flex-col items-center gap-5!'>
+                    <h3 className='text-2xl lg:text-3xl font-semibold'>Welcome to Snaky</h3>
+                    <button ref={startButtonRef} onClick={() => {
+                        startGameHandler()
+                    }}>Start</button>
+                </div>
+                <div ref={gameOverModalRef} className='bg-white/90 rounded-2xl p-10! flex-col items-center gap-5! hidden'>
+                    <h3 className='text-2xl lg:text-3xl font-semibold'>Game Over</h3>
+                    <button ref={restartButtonRef} onClick={restartHandler}>
+                        Play Again
+                    </button>
+                </div>
+            </div>
         </div>
     )
 }
