@@ -74,8 +74,6 @@ const HeroPage = () => {
 
     // Render Snake to gameboard
     const render = () => {
-        console.log("Rendering...");
-
         highScoreRef.current.textContent = highScore;
 
         //Food rendering
@@ -146,17 +144,15 @@ const HeroPage = () => {
             render()
         }, 200)
 
+        let [min, sec] = time.split('-').map(Number)
         timeIntervalId = setInterval(() => {
-            let [min, sec] = time.split('-').map(Number)
-            console.log(min, sec);
-
             sec += 1;
+
             if (sec === 60) {
                 min += 1;
                 sec = 0;
-            } else {
-                sec += 1
             }
+
             time = `${min}-${sec}`
 
             timeRef.current.textContent = time;
@@ -201,21 +197,16 @@ const HeroPage = () => {
         }, 200)
 
         //Start the timer again
-        timeIntervalId = setInterval((e) => {
-
-            time = `00-00`;
-
-            let [min, sec] = time.split('-').map(Number)
-
+        time = `0-0`
+        let [min, sec] = time.split('-').map(Number)
+        timeIntervalId = setInterval(() => {
             sec += 1;
+
             if (sec === 60) {
                 min += 1;
                 sec = 0;
-            } else {
-                sec += 1
             }
             time = `${min}-${sec}`
-
             timeRef.current.textContent = time;
         }, 1000)
     }
@@ -245,7 +236,7 @@ const HeroPage = () => {
                         <div className='border border-gray-300 py-2! px-5! rounded-2xl min-w-80 '><h1>Time : <span ref={timeRef}> 0-0 </span></h1></div>
                     </div>
                 </div>
-                <div ref={gameBoardRef} className='flex-1 grid grid-rows-[repeat(auto-fill,minmax(20px,1fr))] mx-5! lg:mx-53! bg-amber-800'>
+                <div ref={gameBoardRef} className='flex-1 grid grid-rows-[repeat(auto-fill,minmax(20px,1fr))] mx-5! lg:mx-20! sm:mx-10! bg-amber-800'>
                     {Array.from({ length: row }).map((_, i) => (
                         <div key={i} className='grid grid-cols-[repeat(auto-fill,minmax(20px,1fr))]'>
                             {Array.from({ length: column }).map((_, j) => (
