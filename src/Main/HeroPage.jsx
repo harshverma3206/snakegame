@@ -159,6 +159,20 @@ const HeroPage = () => {
     // Start Game
     const startGameHandler = () => {
         modalRef.current.style.display = 'none';
+
+        // 🔧 ADD THIS - Initialize food before game starts
+        const blockElements = blockElementsRef.current;
+        if (blockElements[`${foodRef.current.x}-${foodRef.current.y}`]) {
+            blockElements[`${foodRef.current.x}-${foodRef.current.y}`].classList.add('foodColor')
+        }
+
+        // Add initial snake color
+        snakeRef.current.forEach((segment) => {
+            if (blockElements[`${segment.x}-${segment.y}`]) {
+                blockElements[`${segment.x}-${segment.y}`].classList.add('snakeColor')
+            }
+        })
+
         intervalIdRef.current = setInterval(() => {
             render()
         }, 200)
@@ -166,12 +180,10 @@ const HeroPage = () => {
         let [min, sec] = timeRefValue.current.split('-').map(Number)
         timeIntervalIdRef.current = setInterval(() => {
             sec += 1;
-
             if (sec === 60) {
                 min += 1;
                 sec = 0;
             }
-
             timeRefValue.current = `${min}-${sec}`
             timeRef.current.textContent = timeRefValue.current;
         }, 1000)
