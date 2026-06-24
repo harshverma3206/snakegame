@@ -17,7 +17,7 @@ const HeroPage = () => {
     const highScoreRef = useRef()
     const timeRef = useRef()
     const directionRef = useRef('down')
-    
+
     // CRITICAL: Game state in useRef (NOT let)
     const snakeRef = useRef([{ x: 10, y: 13 }])
     const foodRef = useRef({ x: 15, y: 15 })
@@ -121,7 +121,7 @@ const HeroPage = () => {
         // Food eating conditions
         if (snakeHead.x === food.x && snakeHead.y === food.y) {
             blockElements[`${food.x}-${food.y}`].classList.remove('foodColor')
-            
+
             foodRef.current = {
                 x: Math.floor(Math.random() * row),
                 y: Math.floor(Math.random() * column)
@@ -288,35 +288,35 @@ const HeroPage = () => {
                 </div>
 
                 {/* Mobile Control Buttons - Visible only on Mobile & Tablet (under 768px) */}
-                <div className='flex md:hidden flex-col items-center pb-3'>
+                <div className='flex md:hidden flex-col items-center'>
                     {/* Up Button */}
                     <button
                         onClick={() => handleDirectionChange('up')}
-                        className='p-3! rounded-full!'
+                        className='p-5! rounded-full! -mb-2!'
                     >
                         <MdKeyboardArrowUp />
                     </button>
-
-                    {/* Left, Down, Right Buttons */}
-                    <div className='flex gap-10 items-center justify-center'>
+                    {/* Left, Right Buttons */}
+                    <div className='flex gap-7 items-center justify-center'>
                         <button
                             onClick={() => handleDirectionChange('left')}
-                            className='p-3! rounded-full!'
+                            className='p-5! rounded-full!'
                         >
                             <MdKeyboardArrowLeft />
                         </button>
 
                         <button
                             onClick={() => handleDirectionChange('right')}
-                            className='p-3! rounded-full!'
+                            className='p-5! rounded-full!'
                         >
                             <MdKeyboardArrowRight />
                         </button>
                     </div>
-                    <div className='flex items-center justify-center'>
+                    {/* Down Button */}
+                    <div className='flex items-center -mt-2! justify-center'>
                         <button
                             onClick={() => handleDirectionChange('down')}
-                            className='p-3! rounded-full!'
+                            className='p-5! rounded-full!'
                         >
                             <MdKeyboardArrowDown />
                         </button>
@@ -325,7 +325,7 @@ const HeroPage = () => {
             </div>
 
             {/* ModalBoard  */}
-            <div ref={modalRef} className='h-screen w-full fixed top-0 bg-pink-500/5 backdrop-blur-xl flex items-center justify-center'>
+            {/* <div ref={modalRef} className='h-screen w-full fixed top-0 bg-pink-500/5 backdrop-blur-xl flex items-center justify-center'>
                 <div ref={gameStartRef} className='bg-white/90 rounded-2xl p-10! flex flex-col items-center gap-5!'>
                     <h3 className='text-2xl lg:text-3xl font-semibold'>Welcome to Snaky</h3>
                     <button ref={startButtonRef} onClick={() => {
@@ -338,7 +338,7 @@ const HeroPage = () => {
                         Play Again
                     </button>
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }
