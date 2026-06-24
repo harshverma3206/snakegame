@@ -16,11 +16,11 @@ const HeroPage = () => {
     const scoreRef = useRef()
     const highScoreRef = useRef()
     const timeRef = useRef()
-    const directionRef = useRef('down')
+    const directionRef = useRef('right')
 
     // CRITICAL: Game state in useRef (NOT let)
-    const snakeRef = useRef([{ x: 10, y: 13 }])
-    const foodRef = useRef({ x: 15, y: 15 })
+    const snakeRef = useRef([{ x: 0, y: 0}])
+    const foodRef = useRef({ x: 0, y: 5 })
     const blockElementsRef = useRef({})
     const scoreRefValue = useRef(0)
     const timeRefValue = useRef('0-0')
@@ -204,10 +204,10 @@ const HeroPage = () => {
         scoreRef.current.textContent = scoreRefValue.current;
 
         // Reset snake position
-        snakeRef.current = [{ x: 10, y: 13 }];
+        snakeRef.current = [{ x: 0, y: 0 }];
 
         // Reset Direction
-        directionRef.current = 'down';
+        directionRef.current = 'right';
 
         // Clear all previous colors
         Object.values(blockElements).forEach(el => {
