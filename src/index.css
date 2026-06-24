@@ -24,7 +24,7 @@ img {
 button {
   cursor: pointer;
   border: none;
-  background-color: #b45309;
+  background-color: #de8541;
   color: #fffbeb;
   padding: 0.75rem 2.5rem;
   border-radius: 0.75rem;
@@ -61,7 +61,7 @@ h1 span {
 }
 
 .snakeColor {
-  background-color: rgba(255, 255, 0, 0.866);
+  background-color: rgba(241, 241, 46, 0.866);
   /* border: 1px solid #642e05; */
   border-radius: 35%;
 
