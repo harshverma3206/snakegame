@@ -1,4 +1,4 @@
-import React, { use, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import { MdKeyboardArrowRight } from "react-icons/md";
@@ -6,9 +6,8 @@ import { MdKeyboardArrowUp } from "react-icons/md";
 
 const HeroPage = () => {
 
-    //useRef Conditions
+    //useRef Conditions - ALL GAME STATE MUST BE IN useRef
     const gameBoardRef = useRef()
-    const isFirstRender = useRef(true)
     const startButtonRef = useRef()
     const restartButtonRef = useRef()
     const modalRef = useRef()
@@ -18,25 +17,20 @@ const HeroPage = () => {
     const highScoreRef = useRef()
     const timeRef = useRef()
     const directionRef = useRef('down')
+    
+    // CRITICAL: Game state in useRef (NOT let)
+    const snakeRef = useRef([{ x: 10, y: 13 }])
+    const foodRef = useRef({ x: 15, y: 15 })
+    const blockElementsRef = useRef({})
+    const scoreRefValue = useRef(0)
+    const timeRefValue = useRef('0-0')
+    const highScoreRefValue = useRef(parseInt(localStorage.getItem('highScore')) || 0)
+    const intervalIdRef = useRef(null)
+    const timeIntervalIdRef = useRef(null)
 
-    //useState Conditions
+    //useState Conditions - ONLY for React re-renders
     const [row, setRow] = useState([])
     const [column, setColumn] = useState([])
-    const [blockElements, setBlockElements] = useState([])
-
-    //Global Variables
-    let intervalId = null;
-    let timeIntervalId = null;
-    let score = 0;
-    let time = `0-0`;
-    let highScore = localStorage.getItem('highScore') || 0;
-
-
-    //Generate food
-    let food = {
-        x: Math.floor(Math.random() * row),
-        y: Math.floor(Math.random() * column)
-    }
 
     //useEffect Conditions
     useEffect(() => {
@@ -61,18 +55,15 @@ const HeroPage = () => {
         const allBoxElements = document.querySelectorAll('.box');
         if (allBoxElements.length === 0) return;
 
-        const block = [];
+        const block = {};
         allBoxElements.forEach((e) => {
-            const row = e.dataset.row;
-            const column = e.dataset.column;
-            block[`${row}-${column}`] = e;
+            const rowNum = e.dataset.row;
+            const colNum = e.dataset.column;
+            block[`${rowNum}-${colNum}`] = e;
         })
-        setBlockElements(block);
+        blockElementsRef.current = block;
 
     }, [row, column])
-
-    // Optimized button styles
-    const buttonClass = 'w-16 h-16 rounded-full bg-white/20 backdrop-blur-md border-2 border-white/40 text-white text-2xl hover:bg-white/30 hover:border-white/60 transition-all active:scale-95 shadow-lg flex items-center justify-center'
 
     // Mobile direction button handlers
     const handleDirectionChange = (newDirection) => {
@@ -92,15 +83,21 @@ const HeroPage = () => {
 
     // Render Snake to gameboard
     const render = () => {
-        highScoreRef.current.textContent = highScore;
+        const snake = snakeRef.current;
+        const food = foodRef.current;
+        const blockElements = blockElementsRef.current;
 
-        //Food rendering
-        blockElements[`${food.x}-${food.y}`].classList.add('foodColor')
+        highScoreRef.current.textContent = highScoreRefValue.current;
 
-        //calculate snake head
+        // Food rendering
+        if (blockElements[`${food.x}-${food.y}`]) {
+            blockElements[`${food.x}-${food.y}`].classList.add('foodColor')
+        }
+
+        // Calculate snake head
         let snakeHead = null;
 
-        //Calculate the new head position based on the current direction
+        // Calculate the new head position based on the current direction
         if (directionRef.current === 'right') {
             snakeHead = { x: snake[0].x, y: snake[0].y + 1 }
         } else if (directionRef.current === 'left') {
@@ -111,59 +108,63 @@ const HeroPage = () => {
             snakeHead = { x: snake[0].x - 1, y: snake[0].y }
         }
 
-        //Control game over conditions
+        // Control game over conditions
         if (snakeHead.x < 0 || snakeHead.x >= row || snakeHead.y < 0 || snakeHead.y >= column) {
-            // alert('Game Over');
-            clearInterval(intervalId)
-            clearInterval(timeIntervalId)
+            clearInterval(intervalIdRef.current)
+            clearInterval(timeIntervalIdRef.current)
             modalRef.current.style.display = 'flex';
             gameOverModalRef.current.style.display = 'flex';
             gameStartRef.current.style.display = 'none';
+            return;
         }
 
-        //food eating conditions
+        // Food eating conditions
         if (snakeHead.x === food.x && snakeHead.y === food.y) {
             blockElements[`${food.x}-${food.y}`].classList.remove('foodColor')
-            food = {
+            
+            foodRef.current = {
                 x: Math.floor(Math.random() * row),
                 y: Math.floor(Math.random() * column)
             }
 
-            //Add new head to the snake body
+            // Add new head to the snake body
             snake.unshift(snakeHead);
 
-            score += 1;
-            if (score > highScore) {
-                highScoreRef.current.textContent = highScore;
-                localStorage.setItem('highScore', highScore.toString());
-                highScore = score;
+            scoreRefValue.current += 1;
+            if (scoreRefValue.current > highScoreRefValue.current) {
+                highScoreRefValue.current = scoreRefValue.current;
+                highScoreRef.current.textContent = highScoreRefValue.current;
+                localStorage.setItem('highScore', highScoreRefValue.current.toString());
             }
-            scoreRef.current.textContent = score;
+            scoreRef.current.textContent = scoreRefValue.current;
+        } else {
+            // Remove snake color from the tail segment
+            const tail = snake[snake.length - 1];
+            if (blockElements[`${tail.x}-${tail.y}`]) {
+                blockElements[`${tail.x}-${tail.y}`].classList.remove('snakeColor')
+            }
+
+            snake.unshift(snakeHead);
+            snake.pop();
         }
 
-        //Remove snake color from the tail segment
+        // Fill snake color
         snake.forEach((segment) => {
-            blockElements[`${segment.x}-${segment.y}`].classList.remove('snakeColor')
-        })
-
-        snake.unshift(snakeHead);
-        snake.pop();
-
-        //fill snake color
-        snake.forEach((segment) => {
-            blockElements[`${segment.x}-${segment.y}`].classList.add('snakeColor')
+            if (blockElements[`${segment.x}-${segment.y}`]) {
+                blockElements[`${segment.x}-${segment.y}`].classList.add('snakeColor')
+            }
         })
     }
 
-    //Start Game
+    // Start Game
     const startGameHandler = () => {
         modalRef.current.style.display = 'none';
-        intervalId = setInterval(() => {
+        intervalIdRef.current = setInterval(() => {
             render()
         }, 200)
 
-        let [min, sec] = time.split('-').map(Number)
-        timeIntervalId = setInterval(() => {
+        let [min, sec] = timeRefValue.current.split('-').map(Number)
+        timeIntervalIdRef.current = setInterval(() => {
             sec += 1;
 
             if (sec === 60) {
@@ -171,65 +172,76 @@ const HeroPage = () => {
                 sec = 0;
             }
 
-            time = `${min}-${sec}`
-
-            timeRef.current.textContent = time;
+            timeRefValue.current = `${min}-${sec}`
+            timeRef.current.textContent = timeRefValue.current;
         }, 1000)
     }
 
-    //Restart Game
+    // Restart Game
     const restartHandler = () => {
+        // Clear intervals
+        clearInterval(intervalIdRef.current)
+        clearInterval(timeIntervalIdRef.current)
+
         modalRef.current.style.display = 'none';
 
-        score = 0;
-        scoreRef.current.textContent = score;
+        const blockElements = blockElementsRef.current;
 
-        //Reset snake position
-        snake = [
-            { x: 3, y: 8 }
-        ]
+        // Reset all values
+        scoreRefValue.current = 0;
+        scoreRef.current.textContent = scoreRefValue.current;
 
-        //Reset Direction
+        // Reset snake position
+        snakeRef.current = [{ x: 10, y: 13 }];
+
+        // Reset Direction
         directionRef.current = 'down';
 
-        //Reset snake color
-        snake.forEach((segment) => {
-            blockElements[`${segment.x}-${segment.y}`].classList.add('snakeColor')
+        // Clear all previous colors
+        Object.values(blockElements).forEach(el => {
+            el.classList.remove('snakeColor')
+            el.classList.remove('foodColor')
         })
 
-        //Remove food color
-        blockElements[`${food.x}-${food.y}`].classList.remove('foodColor')
-
         // Reset food position
-        food = {
+        foodRef.current = {
             x: Math.floor(Math.random() * row),
             y: Math.floor(Math.random() * column)
         }
 
-        //Add food color
-        blockElements[`${food.x}-${food.y}`].classList.add('foodColor')
+        // Add food color
+        if (blockElements[`${foodRef.current.x}-${foodRef.current.y}`]) {
+            blockElements[`${foodRef.current.x}-${foodRef.current.y}`].classList.add('foodColor')
+        }
 
-        //Start the game loop again
-        intervalId = setInterval(() => {
+        // Add initial snake color
+        snakeRef.current.forEach((segment) => {
+            if (blockElements[`${segment.x}-${segment.y}`]) {
+                blockElements[`${segment.x}-${segment.y}`].classList.add('snakeColor')
+            }
+        })
+
+        // Start the game loop again
+        intervalIdRef.current = setInterval(() => {
             render()
         }, 200)
 
-        //Start the timer again
-        time = `0-0`
-        let [min, sec] = time.split('-').map(Number)
-        timeIntervalId = setInterval(() => {
+        // Start the timer again
+        timeRefValue.current = `0-0`
+        let [min, sec] = timeRefValue.current.split('-').map(Number)
+        timeIntervalIdRef.current = setInterval(() => {
             sec += 1;
 
             if (sec === 60) {
                 min += 1;
                 sec = 0;
             }
-            time = `${min}-${sec}`
-            timeRef.current.textContent = time;
+            timeRefValue.current = `${min}-${sec}`
+            timeRef.current.textContent = timeRefValue.current;
         }, 1000)
     }
 
-    //control the snake movement using arrow keys
+    // Control the snake movement using arrow keys
     useEffect(() => {
         const handleKeydown = (e) => {
             if (e.key === 'ArrowRight') {
@@ -280,7 +292,6 @@ const HeroPage = () => {
                     {/* Up Button */}
                     <button
                         onClick={() => handleDirectionChange('up')}
-                        // className={buttonClass}
                         className='p-3! rounded-full!'
                     >
                         <MdKeyboardArrowUp />
@@ -290,7 +301,6 @@ const HeroPage = () => {
                     <div className='flex gap-10 items-center justify-center'>
                         <button
                             onClick={() => handleDirectionChange('left')}
-                            // className={buttonClass}
                             className='p-3! rounded-full!'
                         >
                             <MdKeyboardArrowLeft />
@@ -298,7 +308,6 @@ const HeroPage = () => {
 
                         <button
                             onClick={() => handleDirectionChange('right')}
-                            // className={buttonClass}
                             className='p-3! rounded-full!'
                         >
                             <MdKeyboardArrowRight />
@@ -307,7 +316,6 @@ const HeroPage = () => {
                     <div className='flex items-center justify-center'>
                         <button
                             onClick={() => handleDirectionChange('down')}
-                            // className={buttonClass}
                             className='p-3! rounded-full!'
                         >
                             <MdKeyboardArrowDown />
