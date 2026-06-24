@@ -325,7 +325,7 @@ const HeroPage = () => {
             </div>
 
             {/* ModalBoard  */}
-            {/* <div ref={modalRef} className='h-screen w-full fixed top-0 bg-pink-500/5 backdrop-blur-xl flex items-center justify-center'>
+            <div ref={modalRef} className='h-screen w-full fixed top-0 bg-pink-500/5 backdrop-blur-xl flex items-center justify-center'>
                 <div ref={gameStartRef} className='bg-white/90 rounded-2xl p-10! flex flex-col items-center gap-5!'>
                     <h3 className='text-2xl lg:text-3xl font-semibold'>Welcome to Snaky</h3>
                     <button ref={startButtonRef} onClick={() => {
@@ -338,7 +338,7 @@ const HeroPage = () => {
                         Play Again
                     </button>
                 </div>
-            </div> */}
+            </div>
         </div>
     )
 }
